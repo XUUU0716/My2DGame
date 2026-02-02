@@ -1,9 +1,0 @@
-.idea/
-*.iml
-*.iws
-*.ipr
-out/
-target/
-*.class
-.DS_Store
-*.log
