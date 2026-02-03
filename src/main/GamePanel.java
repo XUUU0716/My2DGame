@@ -1,5 +1,8 @@
+package main;
+
+import entity.Player;
+
 import java.awt.*;
-import java.security.Key;
 
 import javax.swing.JPanel;
 
@@ -15,8 +18,12 @@ public class GamePanel extends JPanel implements Runnable{
     final int screenWidth=tileSize*maxScreenCol;    /* 768 pixels */
     final int screenHeight=tileSize*maxScreenRow;   /* 576 pixels */
 
+    // FPS
+    int FPS=60;
+
     KeyHandler keyH=new KeyHandler();
     Thread gameThread;
+    Player player=new Player(this,keyH);
 
     // player default position
     int  playerX=100,playerY=100;
@@ -37,13 +44,43 @@ public class GamePanel extends JPanel implements Runnable{
         gameThread.start();
     }
 
-    @Override
+   /* @Override
     public void run() {
+        double drawInterval=1000000000/FPS; //1/60 and convert to ns
+        double nextDrawTime=System.nanoTime()+drawInterval;
         while(gameThread!=null)
         {
-            long currentTime=System.nanoTime();
             update();
             repaint();
+            try {
+                double remainingTime=nextDrawTime-System.nanoTime();
+                remainingTime/=1000000;
+                if(remainingTime<0)remainingTime=0;
+                Thread.sleep((long)remainingTime);      // convert to millisecond
+                nextDrawTime+=drawInterval;
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }*/
+    @Override
+    public void run()
+    {
+        double drawInterval=1000000000/FPS;
+        long lastTime=System.nanoTime();
+        long currentTime;
+        double delta=0;
+        while(gameThread!=null)
+        {
+            currentTime=System.nanoTime();
+            delta+=(currentTime-lastTime)/drawInterval;
+            lastTime=currentTime;
+            if(delta>=1)
+            {
+                update();
+                repaint();
+                delta--;
+            }
         }
     }
     public void update(){
