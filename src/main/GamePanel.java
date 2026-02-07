@@ -1,33 +1,37 @@
 package main;
 
 import entity.Player;
+import tile.TileManager;
 
 import java.awt.*;
 
 import javax.swing.JPanel;
 
 public class GamePanel extends JPanel implements Runnable{
-    final int originalTileSize=16;
-    final int scale=3;  /* because 16x16 pixel per tile is to small for modern computer resolution  */
+    private final int originalTileSize=16;
+    private final int scale=3;  /* because 16x16 pixel per tile is to small for modern computer resolution  */
 
-    final int tileSize=originalTileSize*scale;  /* 48x48 tiles  */
+    public final int tileSize=originalTileSize*scale;  /* 48x48 tiles  */
 
-    final int maxScreenCol=16;  /* 16 tiles horizontal */
-    final int maxScreenRow=12;  /* 12 tiles vertical  */
+    public final int maxScreenCol=16;  /* 16 tiles horizontal */
+    public final int maxScreenRow=12;  /* 12 tiles vertical  */
 
-    final int screenWidth=tileSize*maxScreenCol;    /* 768 pixels */
-    final int screenHeight=tileSize*maxScreenRow;   /* 576 pixels */
+    public final int screenWidth=tileSize*maxScreenCol;    /* 768 pixels */
+    public final int screenHeight=tileSize*maxScreenRow;   /* 576 pixels */
+
+
+    public final int maxWorldCol=50;
+    public final int maxWorldRow=50;
+    public final int worldWidth=tileSize*maxWorldCol;
+    public final int worldHeight=tileSize*maxWorldRow;
 
     // FPS
     int FPS=60;
 
     KeyHandler keyH=new KeyHandler();
     Thread gameThread;
-    Player player=new Player(this,keyH);
-
-    // player default position
-    int  playerX=100,playerY=100;
-    int playerSpeed=4;
+    public Player player=new Player(this,keyH);
+    TileManager tileM=new TileManager(this);
     /* constructor */
     public GamePanel()
     {
@@ -84,25 +88,13 @@ public class GamePanel extends JPanel implements Runnable{
         }
     }
     public void update(){
-        if(keyH.upPressed==true)
-        {
-            playerY-=playerSpeed;
-        }else if(keyH.downPressed==true)
-        {
-            playerY+=playerSpeed;
-        }else if(keyH.rightPressed==true)
-        {
-            playerX+=playerSpeed;
-        }else if(keyH.leftPressed==true)
-        {
-            playerX-=playerSpeed;
-        }
+        player.update();
     }
     public void paintComponent(Graphics g){
         super.paintComponent(g);
         Graphics2D g2=(Graphics2D) g;
-        g2.setColor(Color.white);
-        g2.fillRect(playerX,playerY,tileSize,tileSize);
+        tileM.draw(g2);
+        player.draw(g2);
         g2.dispose();
     }
 }
